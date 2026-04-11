@@ -1,8 +1,8 @@
 import random
 from datetime import datetime, timedelta
 
+
 def simular_autores(numeroAutores):
-    
     listaAutores = [
         "Gabriel García Márquez",
         "Laura Restrepo",
@@ -12,14 +12,14 @@ def simular_autores(numeroAutores):
         "William Ospina",
         "Álvaro Mutis"
     ]
-    
+
     codigosAutores = ["AU001", "AU002", "AU003", "AU004", "AU005", "AU006", "AU007"]
 
     fechaInicial = datetime(1930, 1, 1)
     autores = []
 
     for _ in range(numeroAutores):
-        fechaSimulada = fechaInicial + timedelta(days=random.randint(0, 30000))  
+        fechaSimulada = fechaInicial + timedelta(days=random.randint(0, 30000))
 
         autor = {
             "id": random.randint(1, 5000),
@@ -33,8 +33,3 @@ def simular_autores(numeroAutores):
         autores.append(autor)
 
     return autores
-
-
-autores_simulados = simular_autores(5)
-for a in autores_simulados:
-    print(a)
