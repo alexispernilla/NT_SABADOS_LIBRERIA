@@ -1,8 +1,8 @@
 import random
 from datetime import datetime, timedelta
 
+
 def simular_libros(numeroLibros):
-    
     libros_base = [
         {"titulo": "Cien años de soledad", "autor": "Gabriel García Márquez", "codigo": "LB001"},
         {"titulo": "Delirio", "autor": "Laura Restrepo", "codigo": "LB002"},
@@ -22,7 +22,7 @@ def simular_libros(numeroLibros):
         fechaSimulada = fechaInicial + timedelta(days=random.randint(0, 26000))
 
         libro = {
-            "id": i + 1,  # ✅ ID único
+            "id": i + 1,
             "titulo": base["titulo"],
             "codigo": base["codigo"],
             "autor": base["autor"],
@@ -33,10 +33,3 @@ def simular_libros(numeroLibros):
         libros.append(libro)
 
     return libros
-
-
-# Ejemplo
-libros_simulados = simular_libros(5)
-for libro in libros_simulados:
-    print(libro)
-    
