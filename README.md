@@ -1,6 +1,7 @@
 # NT_SABADOS_LIBRERIA
 
 Proyecto integrador de Nuevas Tecnologias para simular datos de autores y libros.
+Las simulaciones incluyen errores intencionales para apoyar pruebas de calidad de datos.
 
 ## Requisitos
 
@@ -22,3 +23,4 @@ python utils\main.py
 ```
 
 Los archivos generados se guardan automaticamente en la carpeta `data/`.
+La salida combina registros validos con registros ensuciados de forma intencional.

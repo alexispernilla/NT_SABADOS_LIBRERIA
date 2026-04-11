@@ -2,6 +2,35 @@ import random
 from datetime import datetime, timedelta
 
 
+def ensuciar_autor(autor):
+    probabilidad_error = random.random()
+
+    if probabilidad_error < 0.15:
+        autor["id"] = random.choice([None, 0, -1 * random.randint(1, 100)])
+    elif probabilidad_error < 0.3:
+        autor["nombre"] = random.choice(
+            [
+                "",
+                f" {autor['nombre']} ",
+                autor["nombre"].lower(),
+            ]
+        )
+    elif probabilidad_error < 0.45:
+        autor["codigo"] = random.choice(
+            [
+                autor["codigo"].lower(),
+                autor["codigo"].replace("AU", "AUT-"),
+                f" {autor['codigo']} ",
+            ]
+        )
+    elif probabilidad_error < 0.6:
+        autor["fecha_nacimiento"] = None
+    elif probabilidad_error < 0.75:
+        autor["libros_publicados"] = random.choice([None, -1 * random.randint(1, 10)])
+
+    return autor
+
+
 def simular_autores(numeroAutores):
     listaAutores = [
         "Gabriel García Márquez",
@@ -30,6 +59,7 @@ def simular_autores(numeroAutores):
             "fecha_nacimiento": fechaSimulada.strftime("%Y-%m-%d")
         }
 
+        autor = ensuciar_autor(autor)
         autores.append(autor)
 
     return autores
