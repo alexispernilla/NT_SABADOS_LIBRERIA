@@ -41,7 +41,7 @@ def simular_libros(numeroLibros):
         {"titulo": "Los informantes", "autor": "Juan Gabriel Vásquez", "codigo": "LB004"},
         {"titulo": "Rosario Tijeras", "autor": "Jorge Franco", "codigo": "LB005"},
         {"titulo": "El país de la canela", "autor": "William Ospina", "codigo": "LB006"},
-        {"titulo": "La nieve del almirante", "autor": "Álvaro Mutis", "codigo": "LB007"}
+        {"titulo": "La nieve del almirante", "autor": "Álvaro Mutis", "codigo": "LB007"},
     ]
 
     fechaInicial = datetime(1950, 1, 1)
@@ -58,7 +58,7 @@ def simular_libros(numeroLibros):
             "codigo": base["codigo"],
             "autor": base["autor"],
             "paginas": random.randint(100, 800),
-            "fecha_publicacion": fechaSimulada.strftime("%Y-%m-%d")
+            "fecha_publicacion": fechaSimulada.strftime("%Y-%m-%d"),
         }
 
         libro = ensuciar_libro(libro)

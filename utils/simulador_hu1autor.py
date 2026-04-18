@@ -39,7 +39,7 @@ def simular_autores(numeroAutores):
         "Juan Gabriel Vásquez",
         "Jorge Franco",
         "William Ospina",
-        "Álvaro Mutis"
+        "Álvaro Mutis",
     ]
 
     codigosAutores = ["AU001", "AU002", "AU003", "AU004", "AU005", "AU006", "AU007"]
@@ -56,7 +56,7 @@ def simular_autores(numeroAutores):
             "codigo": random.choice(codigosAutores),
             "nacionalidad": "Colombiana",
             "libros_publicados": random.randint(1, 50),
-            "fecha_nacimiento": fechaSimulada.strftime("%Y-%m-%d")
+            "fecha_nacimiento": fechaSimulada.strftime("%Y-%m-%d"),
         }
 
         autor = ensuciar_autor(autor)
