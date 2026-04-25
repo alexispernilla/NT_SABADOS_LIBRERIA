@@ -10,6 +10,7 @@ if ROOT_DIR not in sys.path:
 
 from notebook.limpieza_autores import limpiar_autores
 from notebook.limpieza_libros import limpiar_libros
+from notebook.descripcion_hu1_autores import describir_autores
 from utils.simulador_hu1autor import simular_autores
 from utils.simulador_hu2libros import simular_libros
 
@@ -28,7 +29,9 @@ def guardar_simulacion(nombre, datos, sufijo=""):
     df.to_csv(os.path.join(DATA_DIR, f"{nombre_archivo}.csv"), index=False)
 
 
-def procesar_simulacion(nombre, funcion_simulador, funcion_limpieza, cantidad_registros):
+def procesar_simulacion(
+    nombre, funcion_simulador, funcion_limpieza, cantidad_registros, funcion_descripcion=None
+):
     simulaciones = funcion_simulador(cantidad_registros)
     simulaciones_ordenadas = pd.DataFrame(simulaciones)
     simulaciones_limpias = funcion_limpieza(simulaciones_ordenadas)
@@ -36,12 +39,15 @@ def procesar_simulacion(nombre, funcion_simulador, funcion_limpieza, cantidad_re
     guardar_simulacion(nombre, simulaciones_ordenadas)
     guardar_simulacion(nombre, simulaciones_limpias, "_limpia")
 
+    if funcion_descripcion is not None:
+        funcion_descripcion(simulaciones_limpias)
+
     return len(simulaciones_ordenadas), len(simulaciones_limpias)
 
 
 def main():
     total_autores, total_autores_limpios = procesar_simulacion(
-        "autores", simular_autores, limpiar_autores, 1000
+        "autores", simular_autores, limpiar_autores, 1000, describir_autores
     )
     total_libros, total_libros_limpios = procesar_simulacion(
         "libros", simular_libros, limpiar_libros, 1000
