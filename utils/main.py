@@ -11,6 +11,7 @@ if ROOT_DIR not in sys.path:
 from notebook.limpieza_autores import limpiar_autores
 from notebook.limpieza_libros import limpiar_libros
 from notebook.descripcion_hu1_autores import describir_autores
+from notebook.descripcion_hu2_libros import describir_libros
 from utils.simulador_hu1autor import simular_autores
 from utils.simulador_hu2libros import simular_libros
 
@@ -50,7 +51,7 @@ def main():
         "autores", simular_autores, limpiar_autores, 1000, describir_autores
     )
     total_libros, total_libros_limpios = procesar_simulacion(
-        "libros", simular_libros, limpiar_libros, 1000
+        "libros", simular_libros, limpiar_libros, 1000, describir_libros
     )
 
     print("Simulaciones generadas:")
