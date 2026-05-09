@@ -1,62 +1,35 @@
 import pandas as pd
 
-
-VALORES_VALIDOS_TITULO = {
-    "cien años de soledad",
-    "delirio",
-    "la virgen de los sicarios",
-    "los informantes",
-    "rosario tijeras",
-    "el país de la canela",
-    "la nieve del almirante",
-}
-VALORES_VALIDOS_AUTOR = {
-    "gabriel garcía márquez",
-    "laura restrepo",
-    "fernando vallejo",
-    "juan gabriel vásquez",
-    "jorge franco",
-    "william ospina",
-    "álvaro mutis",
-}
-VALORES_VALIDOS_CODIGO = {"lb001", "lb002", "lb003", "lb004", "lb005", "lb006", "lb007"}
-FECHA_POR_DEFECTO = pd.Timestamp("2000-01-01")
-
-
 def limpiar_libros(data_frame_sucio: pd.DataFrame) -> pd.DataFrame:
+    if data_frame_sucio.empty:
+        return pd.DataFrame(columns=["id", "titulo", "isbn", "editorial", "anioPublicacion", "cantidadEjemplares", "disponible"])
+
     data_frame_limpio = data_frame_sucio.copy()
 
-    columnas_texto = ["titulo", "codigo", "autor"]
+    cols_esperadas = ["id", "titulo", "isbn", "editorial", "anioPublicacion", "cantidadEjemplares", "disponible"]
+    for col in cols_esperadas:
+        if col not in data_frame_limpio.columns:
+            data_frame_limpio[col] = pd.NA
+
+    columnas_texto = ["titulo", "isbn", "editorial"]
     for columna in columnas_texto:
         data_frame_limpio[columna] = (
             data_frame_limpio[columna].astype("string").str.strip().str.lower()
         )
 
-    data_frame_limpio["titulo"] = data_frame_limpio["titulo"].where(
-        data_frame_limpio["titulo"].isin(VALORES_VALIDOS_TITULO), pd.NA
-    )
-    data_frame_limpio["codigo"] = data_frame_limpio["codigo"].where(
-        data_frame_limpio["codigo"].isin(VALORES_VALIDOS_CODIGO), pd.NA
-    )
-    data_frame_limpio["autor"] = data_frame_limpio["autor"].where(
-        data_frame_limpio["autor"].isin(VALORES_VALIDOS_AUTOR), pd.NA
-    )
-
     data_frame_limpio["id"] = pd.to_numeric(data_frame_limpio["id"], errors="coerce")
-    data_frame_limpio["paginas"] = pd.to_numeric(data_frame_limpio["paginas"], errors="coerce")
+    data_frame_limpio["anioPublicacion"] = pd.to_numeric(data_frame_limpio["anioPublicacion"], errors="coerce")
+    data_frame_limpio["cantidadEjemplares"] = pd.to_numeric(data_frame_limpio["cantidadEjemplares"], errors="coerce")
 
+    data_frame_limpio = data_frame_limpio.dropna(subset=["id"])
     data_frame_limpio = data_frame_limpio[data_frame_limpio["id"] > 0]
-    data_frame_limpio = data_frame_limpio[data_frame_limpio["paginas"].between(1, 2000)]
+    
+    # Rellenar con 0 para evitar errores en dropna
+    data_frame_limpio["cantidadEjemplares"] = data_frame_limpio["cantidadEjemplares"].fillna(0)
 
-    data_frame_limpio["fecha_publicacion"] = pd.to_datetime(
-        data_frame_limpio["fecha_publicacion"], errors="coerce"
-    )
-    data_frame_limpio["fecha_publicacion"] = data_frame_limpio[
-        "fecha_publicacion"
-    ].fillna(FECHA_POR_DEFECTO)
-
-    columnas_obligatorias = ["id", "titulo", "codigo", "autor", "paginas"]
+    columnas_obligatorias = ["id", "titulo", "isbn"]
     data_frame_limpio = data_frame_limpio.dropna(subset=columnas_obligatorias)
-    data_frame_limpio = data_frame_limpio.drop_duplicates()
+    data_frame_limpio = data_frame_limpio.drop_duplicates(subset=["id"])
 
-    return data_frame_limpio
+    # Filtrar columnas finales para omitir objetos complejos como autor y categoria
+    return data_frame_limpio[cols_esperadas]
