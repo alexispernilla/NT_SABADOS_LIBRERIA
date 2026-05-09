@@ -15,6 +15,10 @@ from notebook.descripcion_hu2_libros import describir_libros
 from utils.simulador_hu1autor import simular_autores
 from utils.simulador_hu2libros import simular_libros
 
+#zona para importar llamados al api (consumo)
+from notebook.consumo_hu1_autores import consumir_api_autores
+from notebook.consumo_hu2_libros import consumir_api_libros
+
 
 def guardar_simulacion(nombre, datos, sufijo=""):
     os.makedirs(DATA_DIR, exist_ok=True)
@@ -48,10 +52,10 @@ def procesar_simulacion(
 
 def main():
     total_autores, total_autores_limpios = procesar_simulacion(
-        "autores", simular_autores, limpiar_autores, 1000, describir_autores
+        "autores", consumir_api_autores, limpiar_autores, 1000, describir_autores
     )
     total_libros, total_libros_limpios = procesar_simulacion(
-        "libros", simular_libros, limpiar_libros, 1000, describir_libros
+        "libros", consumir_api_libros, limpiar_libros, 1000, describir_libros
     )
 
     print("Simulaciones generadas:")
