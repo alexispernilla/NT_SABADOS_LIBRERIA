@@ -1,53 +1,71 @@
-import pandas as pd 
+import pandas as pd
+
 
 def transformar_autores(data_frame_limpio):
-    # Transformacion 1: Cantidad de Autores por Nacionalidad
-    # Filtramos para asegurarnos de no contar registros sin nacionalidad
-    filtro1 = data_frame_limpio.query('nacionalidad != ""')
-    agrupacion1 = filtro1.groupby('nacionalidad')['id'].count().reset_index()
-    agrupacion1 = agrupacion1.rename(columns={'id': 'cantidad_autores'})
-    agrupacion1 = agrupacion1.sort_values(by='cantidad_autores', ascending=False)
+    # transformacion 1: autores con nacionalidad registrada
+    filtro1 = data_frame_limpio.query('nacionalidad.notna()')
 
-    # Transformacion 2: Conteo de Autores por Apellido (Top 10)
-    # Filtramos los autores cuyo apellido no esté vacío
-    filtro2 = data_frame_limpio.query('apellido != ""')
+    # Agrupar por nacionalidad y contar autores
+    agrupacion1 = filtro1.groupby('nacionalidad')['id'].count().reset_index()
+
+    # transformacion 2: autores britanicos por apellido
+    filtro2 = data_frame_limpio.query('nacionalidad == "britanico"')
+
+    # Agrupar por apellido y contar autores
     agrupacion2 = filtro2.groupby('apellido')['id'].count().reset_index()
-    agrupacion2 = agrupacion2.rename(columns={'id': 'cantidad_autores'})
-    agrupacion2 = agrupacion2.sort_values(by='cantidad_autores', ascending=False).head(10)
+
+    # transformacion 3: autores latinoamericanos por nacionalidad
+    filtro3 = data_frame_limpio.query('nacionalidad in ["argentino", "chileno", "colombiano", "peruano"]')
+
+    # Agrupar por nacionalidad y contar autores latinoamericanos
+    agrupacion3 = filtro3.groupby('nacionalidad')['id'].count().reset_index()
 
     agrupacion_resumen = {
-        "autores_por_nacionalidad": agrupacion1,
-        "top_apellidos_autores": agrupacion2
+        "agrupacion1": agrupacion1,
+        "agrupacion2": agrupacion2,
+        "agrupacion3": agrupacion3
     }
 
     return agrupacion_resumen
 
+
 def transformar_libros(data_frame_limpio):
-    # Transformacion 3: Total de Ejemplares Disponibles por Editorial
-    # Filtramos únicamente los libros que están disponibles
-    filtro3 = data_frame_limpio.query('disponible == True')
-    agrupacion3 = filtro3.groupby('editorial')['cantidadEjemplares'].sum().reset_index()
-    agrupacion3 = agrupacion3.rename(columns={'cantidadEjemplares': 'total_ejemplares'})
-    agrupacion3 = agrupacion3.sort_values(by='total_ejemplares', ascending=False)
+    # transformacion 1: libros disponibles
+    filtro1 = data_frame_limpio.query('disponible == True')
 
-    # Transformacion 4: Tendencia de Publicación por Año (A partir del año 1900)
-    # Filtramos libros publicados en 1900 o después para evitar valores atípicos históricos
-    filtro4 = data_frame_limpio.query('anioPublicacion >= 1900')
-    agrupacion4 = filtro4.groupby('anioPublicacion')['id'].count().reset_index()
-    agrupacion4 = agrupacion4.rename(columns={'id': 'cantidad_libros_publicados'})
-    agrupacion4 = agrupacion4.sort_values(by='anioPublicacion', ascending=True)
+    # Agrupar por editorial y sumar la cantidad de ejemplares
+    agrupacion1 = filtro1.groupby('editorial')['cantidadEjemplares'].sum().reset_index()
 
-    # Transformacion 5: Promedio de Ejemplares por Editorial en Libros Recientes (Desde 2000)
-    # Filtramos para enfocarnos en publicaciones contemporáneas y con ejemplares existentes
-    filtro5 = data_frame_limpio.query('anioPublicacion >= 2000 and cantidadEjemplares > 0')
-    agrupacion5 = filtro5.groupby('editorial')['cantidadEjemplares'].mean().reset_index()
-    agrupacion5 = agrupacion5.rename(columns={'cantidadEjemplares': 'promedio_ejemplares'})
-    agrupacion5 = agrupacion5.round(2).sort_values(by='promedio_ejemplares', ascending=False)
+    # transformacion 2: libros publicados desde 1990
+    filtro2 = data_frame_limpio.query('anioPublicacion >= 1990')
+
+    # Agrupar por anio y contar libros
+    agrupacion2 = filtro2.groupby('anioPublicacion')['id'].count().reset_index()
+
+    # transformacion 3: libros con autor registrado
+    filtro3 = data_frame_limpio.query('autorNombre.notna()')
+
+    # Agrupar por autor y contar libros
+    agrupacion3 = filtro3.groupby('autorNombre')['id'].count().reset_index()
+
+    # transformacion 4: libros disponibles con editorial registrada
+    filtro4 = data_frame_limpio.query('disponible == True and editorial.notna()')
+
+    # Agrupar por editorial y calcular el promedio de ejemplares
+    agrupacion4 = filtro4.groupby('editorial')['cantidadEjemplares'].mean().reset_index()
+
+    # transformacion 5: libros con categoria registrada
+    filtro5 = data_frame_limpio.query('categoriaNombre.notna()')
+
+    # Agrupar por categoria y contar libros
+    agrupacion5 = filtro5.groupby('categoriaNombre')['id'].count().reset_index()
 
     agrupacion_resumen = {
-        "ejemplares_disponibles_por_editorial": agrupacion3,
-        "libros_publicados_por_anio": agrupacion4,
-        "promedio_ejemplares_editorial_recientes": agrupacion5
+        "agrupacion1": agrupacion1,
+        "agrupacion2": agrupacion2,
+        "agrupacion3": agrupacion3,
+        "agrupacion4": agrupacion4,
+        "agrupacion5": agrupacion5
     }
 
     return agrupacion_resumen

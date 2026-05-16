@@ -26,6 +26,28 @@ agrupaciones_autores = transformar_autores(data_frame_limpio_autores)
 agrupaciones_libros = transformar_libros(data_frame_limpio_libros)
 
 
-print(agrupaciones_autores)
+print("\n=== AGRUPACIONES DE AUTORES ===")
+print("\n1. Cantidad de autores por nacionalidad")
+print(agrupaciones_autores["agrupacion1"])
 
-print(agrupaciones_libros)
+print("\n2. Autores britanicos agrupados por apellido")
+print(agrupaciones_autores["agrupacion2"])
+
+print("\n3. Cantidad de autores latinoamericanos por nacionalidad")
+print(agrupaciones_autores["agrupacion3"])
+
+print("\n=== AGRUPACIONES DE LIBROS ===")
+print("\n1. Cantidad de ejemplares disponibles por editorial")
+print(agrupaciones_libros["agrupacion1"])
+
+print("\n2. Cantidad de libros publicados desde 1990 por anio")
+print(agrupaciones_libros["agrupacion2"])
+
+print("\n3. Cantidad de libros por autor")
+print(agrupaciones_libros["agrupacion3"])
+
+print("\n4. Promedio de ejemplares disponibles por editorial")
+print(agrupaciones_libros["agrupacion4"])
+
+print("\n5. Cantidad de libros por categoria")
+print(agrupaciones_libros["agrupacion5"])

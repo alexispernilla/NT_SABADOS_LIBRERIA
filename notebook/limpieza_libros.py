@@ -2,7 +2,7 @@ import pandas as pd
 
 def limpiar_libros(data_frame_sucio: pd.DataFrame) -> pd.DataFrame:
     if data_frame_sucio.empty:
-        return pd.DataFrame(columns=["id", "titulo", "isbn", "editorial", "anioPublicacion", "cantidadEjemplares", "disponible"])
+        return pd.DataFrame(columns=["id", "titulo", "isbn", "editorial", "anioPublicacion", "cantidadEjemplares", "disponible", "autorNombre", "categoriaNombre"])
 
     data_frame_limpio = data_frame_sucio.copy()
 
@@ -16,6 +16,17 @@ def limpiar_libros(data_frame_sucio: pd.DataFrame) -> pd.DataFrame:
         data_frame_limpio[columna] = (
             data_frame_limpio[columna].astype("string").str.strip().str.lower()
         )
+
+    data_frame_limpio["autorNombre"] = data_frame_limpio["autor"].apply(
+        lambda autor: f"{autor.get('nombre', '')} {autor.get('apellido', '')}".strip().lower()
+        if isinstance(autor, dict)
+        else pd.NA
+    )
+    data_frame_limpio["categoriaNombre"] = data_frame_limpio["categoria"].apply(
+        lambda categoria: categoria.get("nombre", "").strip().lower()
+        if isinstance(categoria, dict)
+        else pd.NA
+    )
 
     data_frame_limpio["id"] = pd.to_numeric(data_frame_limpio["id"], errors="coerce")
     data_frame_limpio["anioPublicacion"] = pd.to_numeric(data_frame_limpio["anioPublicacion"], errors="coerce")
@@ -31,5 +42,5 @@ def limpiar_libros(data_frame_sucio: pd.DataFrame) -> pd.DataFrame:
     data_frame_limpio = data_frame_limpio.dropna(subset=columnas_obligatorias)
     data_frame_limpio = data_frame_limpio.drop_duplicates(subset=["id"])
 
-    # Filtrar columnas finales para omitir objetos complejos como autor y categoria
-    return data_frame_limpio[cols_esperadas]
+    columnas_finales = cols_esperadas + ["autorNombre", "categoriaNombre"]
+    return data_frame_limpio[columnas_finales]

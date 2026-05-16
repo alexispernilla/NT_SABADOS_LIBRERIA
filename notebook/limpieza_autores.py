@@ -1,6 +1,19 @@
 import pandas as pd
 
-VALORES_VALIDOS_NACIONALIDAD = {"colombiana"}
+VALORES_VALIDOS_NACIONALIDAD = {
+    "argentino",
+    "britanico",
+    "chileno",
+    "colombiano",
+    "espanol",
+    "estadounidense",
+    "frances",
+    "irlandes",
+    "italiano",
+    "japones",
+    "peruano",
+    "ruso",
+}
 
 def limpiar_autores(data_frame_sucio: pd.DataFrame) -> pd.DataFrame:
     if data_frame_sucio.empty:
