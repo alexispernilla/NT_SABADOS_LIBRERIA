@@ -4,72 +4,61 @@ import sys
 import pandas as pd
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DATA_DIR = os.path.join(ROOT_DIR, "data")
 if ROOT_DIR not in sys.path:
     sys.path.insert(0, ROOT_DIR)
 
-from notebook.limpieza_autores import limpiar_autores
-from notebook.limpieza_libros import limpiar_libros
-from notebook.descripcion_hu1_autores import describir_autores
-from notebook.descripcion_hu2_libros import describir_libros
-from utils.simulador_hu1autor import simular_autores
-from utils.simulador_hu2libros import simular_libros
-
-#zona para importar llamados al api (consumo)
 from notebook.consumo_hu1_autores import consumir_api_autores
 from notebook.consumo_hu2_libros import consumir_api_libros
-
-
-def guardar_simulacion(nombre, datos, sufijo=""):
-    os.makedirs(DATA_DIR, exist_ok=True)
-    df = datos if isinstance(datos, pd.DataFrame) else pd.DataFrame(datos)
-    nombre_archivo = f"simulacion_{nombre}{sufijo}"
-    df.to_json(
-        os.path.join(DATA_DIR, f"{nombre_archivo}.json"),
-        orient="records",
-        indent=4,
-        date_format="iso",
-        force_ascii=False,
-    )
-    df.to_csv(os.path.join(DATA_DIR, f"{nombre_archivo}.csv"), index=False)
-
-
-def procesar_simulacion(
-    nombre, funcion_simulador, funcion_limpieza, cantidad_registros, funcion_descripcion=None
-):
-    simulaciones = funcion_simulador(cantidad_registros)
-    simulaciones_ordenadas = pd.DataFrame(simulaciones)
-    simulaciones_limpias = funcion_limpieza(simulaciones_ordenadas)
-
-    guardar_simulacion(nombre, simulaciones_ordenadas)
-    guardar_simulacion(nombre, simulaciones_limpias, "_limpia")
-
-    if funcion_descripcion is not None:
-        funcion_descripcion(simulaciones_limpias)
-
-    return len(simulaciones_ordenadas), len(simulaciones_limpias)
+from notebook.graficacion import graficar_agrupaciones_autores, graficar_agrupaciones_libros
+from notebook.limpieza_autores import limpiar_autores
+from notebook.limpieza_libros import limpiar_libros
+from notebook.transformacion import transformar_autores, transformar_libros
 
 
 def main():
-    total_autores, total_autores_limpios = procesar_simulacion(
-        "autores", consumir_api_autores, limpiar_autores, 1000, describir_autores
-    )
-    total_libros, total_libros_limpios = procesar_simulacion(
-        "libros", consumir_api_libros, limpiar_libros, 1000, describir_libros
-    )
+    datos_autores = consumir_api_autores()
+    data_frame_autores = pd.DataFrame(datos_autores)
+    data_frame_limpio_autores = limpiar_autores(data_frame_autores)
 
-    print("Simulaciones generadas:")
-    print(" - data/simulacion_autores.json")
-    print(" - data/simulacion_autores.csv")
-    print(" - data/simulacion_autores_limpia.json")
-    print(" - data/simulacion_autores_limpia.csv")
-    print(" - data/simulacion_libros.json")
-    print(" - data/simulacion_libros.csv")
-    print(" - data/simulacion_libros_limpia.json")
-    print(" - data/simulacion_libros_limpia.csv")
-    print()
-    print(f"Autores: {total_autores_limpios} registros limpios de {total_autores}")
-    print(f"Libros: {total_libros_limpios} registros limpios de {total_libros}")
+    datos_libros = consumir_api_libros()
+    data_frame_libros = pd.DataFrame(datos_libros)
+    data_frame_limpio_libros = limpiar_libros(data_frame_libros)
+
+    agrupaciones_autores = transformar_autores(data_frame_limpio_autores)
+    agrupaciones_libros = transformar_libros(data_frame_limpio_libros)
+
+    print("\n=== AGRUPACIONES DE AUTORES ===")
+    print("\n1. Cantidad de autores por nacionalidad")
+    print(agrupaciones_autores["agrupacion1"])
+
+    print("\n2. Autores britanicos agrupados por apellido")
+    print(agrupaciones_autores["agrupacion2"])
+
+    print("\n3. Cantidad de autores latinoamericanos por nacionalidad")
+    print(agrupaciones_autores["agrupacion3"])
+
+    print("\n=== AGRUPACIONES DE LIBROS ===")
+    print("\n1. Cantidad de ejemplares disponibles por editorial")
+    print(agrupaciones_libros["agrupacion1"])
+
+    print("\n2. Cantidad de libros publicados desde 1990 por anio")
+    print(agrupaciones_libros["agrupacion2"])
+
+    print("\n3. Cantidad de libros por autor")
+    print(agrupaciones_libros["agrupacion3"])
+
+    print("\n4. Promedio de ejemplares disponibles por editorial")
+    print(agrupaciones_libros["agrupacion4"])
+
+    print("\n5. Cantidad de libros por categoria")
+    print(agrupaciones_libros["agrupacion5"])
+
+    print("\n6. Cantidad de libros por categoria y editorial")
+    print(agrupaciones_libros["agrupacion6"])
+
+    print("\n=== GENERACION DE GRAFICOS ===")
+    graficar_agrupaciones_autores(agrupaciones_autores)
+    graficar_agrupaciones_libros(agrupaciones_libros)
 
 
 if __name__ == "__main__":
